@@ -29,24 +29,11 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	// 初期化処理ここから
 	// ==============================
 
-	Quaternion q1, q2;
-
-	q1 = Quaternion(2.0f, 3.0f, 4.0f, 1.0f);
-	q2 = Quaternion(1.0f, 3.0f, 5.0f, 2.0f);
-
-	Quaternion identitiy = Quaternion::IdentityQuaternion();
-
-	Quaternion conj = Quaternion::Conjugate(q1);
-
-	Quaternion inv = Quaternion::Inverse(q1);
-
-	Quaternion normal = Quaternion::Normalize(q1);
-
-	Quaternion mult1 = Quaternion::Muyltiply(q1, q2);
-
-	Quaternion mult2 = Quaternion::Muyltiply(q2, q1);
-
-	float norm = Quaternion::Norm(q1);
+	Quaternion rotation = Quaternion::MakeRotateAxisAngleQuaternion(Normalize(Vector3{1.0f, 0.4f, -0.2f}), 0.45f);
+	Vector3 pointY = {2.1f, -0.9f, 1.3f};
+	Matrix4x4 rotateMatrix = Quaternion::MakeRotateMatrix(rotation);
+	Vector3 rotatetByQuaternion = Quaternion::RottateVector(pointY, rotation);
+	Vector3 rotatetByMatrix = Vector3Transform(pointY, rotateMatrix);
 
 	//==============================
 	// ゲームループ
@@ -65,44 +52,65 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//==============================
 
 #ifdef _DEBUG
-		// 1行出力ヘルパー（x y z w : Label）
-		auto DrawQuatRow = [](const char* label, const Quaternion& q) {
+		
+		ImGui::Begin("Quaternion Test");
+
+		auto RowQuat = [](const char* label, const Quaternion& q) {
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
 			ImGui::Text("%6.2f %6.2f %6.2f %6.2f", q.x, q.y, q.z, q.w);
 			ImGui::TableSetColumnIndex(1);
-			ImGui::Text(" %s", label);
+			ImGui::Text(": %s", label);
 		};
 
-		auto DrawFloatRow = [](const char* label, float v) {
+		auto RowVec3 = [](const char* label, const Vector3& v) {
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
-			ImGui::Text("%6.2f", v);
+			ImGui::Text("%6.2f %6.2f %6.2f", v.x, v.y, v.z);
 			ImGui::TableSetColumnIndex(1);
-			ImGui::Text(" %s", label);
+			ImGui::Text(": %s", label);
 		};
 
-		ImGui::Begin("Quaternion Test");
+		auto RowHeader = [](const char* title) {
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::TextUnformatted(title);
+			ImGui::TableSetColumnIndex(1);
+			ImGui::TextUnformatted("");
+		};
 
-		ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV;
+		auto RowMat4Line = [](const float a, const float b, const float c, const float d) {
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text("%7.3f %7.3f %7.3f %7.3f", a, b, c, d);
+			ImGui::TableSetColumnIndex(1);
+			ImGui::TextUnformatted("");
+		};
 
-		if (ImGui::BeginTable("QuatTable", 2, flags)) {
-			// 左列(数値)の幅を固定すると、コロン位置がキレイに揃う
-			ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed, 260.0f);
+		ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_BordersInnerV;
+
+		if (ImGui::BeginTable("ResultTable", 2, flags)) {
+			// 左列の幅を固定すると、右の「: label」が綺麗に揃う
+			ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed, 320.0f);
 			ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthStretch);
 
-			DrawQuatRow("Identity", identitiy);
-			DrawQuatRow("Conjugate", conj);
-			DrawQuatRow("Inverse", inv);
-			DrawQuatRow("Normalize", normal);
-			DrawQuatRow("Multipy(q1, q2)", mult1);
-			DrawQuatRow("Multipy(q2, q1)", mult2);
-			DrawFloatRow("Norm", norm);
+			// ---- ここから表示したいものを順番に並べる ----
+			RowQuat("rotation", rotation); // Quaternion
+
+			RowHeader("rotateMatrix");
+			RowMat4Line(rotateMatrix.m[0][0], rotateMatrix.m[0][1], rotateMatrix.m[0][2], rotateMatrix.m[0][3]);
+			RowMat4Line(rotateMatrix.m[1][0], rotateMatrix.m[1][1], rotateMatrix.m[1][2], rotateMatrix.m[1][3]);
+			RowMat4Line(rotateMatrix.m[2][0], rotateMatrix.m[2][1], rotateMatrix.m[2][2], rotateMatrix.m[2][3]);
+			RowMat4Line(rotateMatrix.m[3][0], rotateMatrix.m[3][1], rotateMatrix.m[3][2], rotateMatrix.m[3][3]);
+
+			RowVec3("rotateByQuaternion", rotatetByQuaternion);
+			RowVec3("rotateByMatrix", rotatetByMatrix);
 
 			ImGui::EndTable();
 		}
 
 		ImGui::End();
+
 #endif
 
 		//==============================
