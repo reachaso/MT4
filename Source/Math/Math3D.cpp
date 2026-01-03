@@ -5,11 +5,11 @@
 #include <math.h>
 
 //==================================
-// Vector3 関連関数
+//  Vector3 関連関数
 //==================================
 
-Vector3 Add(const Vector3 &v1, const Vector3 &v2) {
-  Vector3 result;
+ Vector3 Add(const  Vector3 &v1, const  Vector3 &v2) {
+   Vector3 result;
 
   result.x = v1.x + v2.x;
   result.y = v1.y + v2.y;
@@ -18,8 +18,8 @@ Vector3 Add(const Vector3 &v1, const Vector3 &v2) {
   return result;
 }
 
-Vector3 Subtract(const Vector3 &v1, const Vector3 &v2) {
-  Vector3 result;
+ Vector3 Subtract(const  Vector3 &v1, const  Vector3 &v2) {
+   Vector3 result;
 
   result.x = v1.x - v2.x;
   result.y = v1.y - v2.y;
@@ -28,8 +28,8 @@ Vector3 Subtract(const Vector3 &v1, const Vector3 &v2) {
   return result;
 }
 
-Vector3 Multiply(const Vector3 &v1, float scalar) {
-  Vector3 result;
+ Vector3 Multiply(const  Vector3 &v1, float scalar) {
+   Vector3 result;
 
   result.x = v1.x * scalar;
   result.y = v1.y * scalar;
@@ -38,8 +38,8 @@ Vector3 Multiply(const Vector3 &v1, float scalar) {
   return result;
 }
 
-float Dot(const Vector3 &v1, const Vector3 &v2) {
-  Vector3 result;
+float Dot(const  Vector3 &v1, const  Vector3 &v2) {
+   Vector3 result;
 
   result.x = v1.x * v2.x;
   result.y = v1.y * v2.y;
@@ -48,7 +48,7 @@ float Dot(const Vector3 &v1, const Vector3 &v2) {
   return result.x + result.y + result.z;
 }
 
-float Length(const Vector3 &v) {
+float Length(const  Vector3 &v) {
   float result;
 
   result = v.x * v.x + v.y * v.y + v.z * v.z;
@@ -58,8 +58,8 @@ float Length(const Vector3 &v) {
   return result;
 }
 
-Vector3 Normalize(const Vector3 &v) {
-  Vector3 result;
+ Vector3 Normalize(const  Vector3 &v) {
+   Vector3 result;
   float length = Length(v);
   if (length != 0) {
     result.x = v.x / length;
@@ -73,8 +73,8 @@ Vector3 Normalize(const Vector3 &v) {
   return result;
 }
 
-Vector3 Vector3Transform(const Vector3 &vector, const Matrix4x4 &matrix) {
-  Vector3 result;
+ Vector3 Vector3Transform(const  Vector3 &vector, const Matrix4x4 &matrix) {
+   Vector3 result;
 
   result.x = vector.x * matrix.m[0][0] + vector.y * matrix.m[1][0] +
              vector.z * matrix.m[2][0] + 1.0f * matrix.m[3][0];
@@ -99,7 +99,7 @@ Vector3 Vector3Transform(const Vector3 &vector, const Matrix4x4 &matrix) {
   return result;
 }
 
-Vector3 project(const Vector3 &v1, const Vector3 &v2) {
+ Vector3 project(const  Vector3 &v1, const  Vector3 &v2) {
   float dot = Dot(v1, v2);
   float lengthSq = Dot(v2, v2); // v2の長さの2乗
 
@@ -108,22 +108,22 @@ Vector3 project(const Vector3 &v1, const Vector3 &v2) {
   }
 
   float scalar = dot / lengthSq;
-  Vector3 result = Multiply(v2, scalar);
+   Vector3 result = Multiply(v2, scalar);
 
   return result;
 }
 
-Vector3 closestPoint(const Vector3 &point, const Segment &segment) {
+ Vector3 closestPoint(const  Vector3 &point, const Segment &segment) {
 
   // 線分の始点
-  const Vector3 &a = segment.origin;
+  const  Vector3 &a = segment.origin;
   // 線分の終点
-  Vector3 b = Add(segment.origin, segment.diff);
+   Vector3 b = Add(segment.origin, segment.diff);
 
   // abベクトル
-  Vector3 ab = Subtract(b, a);
+   Vector3 ab = Subtract(b, a);
   // apベクトル
-  Vector3 ap = Subtract(point, a);
+   Vector3 ap = Subtract(point, a);
 
   float abLenSq = Dot(ab, ab);
   if (abLenSq == 0.0f) {
@@ -139,12 +139,12 @@ Vector3 closestPoint(const Vector3 &point, const Segment &segment) {
     t = 1.0f;
 
   // 最近接点を計算
-  Vector3 result = Add(a, Multiply(ab, t));
+   Vector3 result = Add(a, Multiply(ab, t));
   return result;
 }
 
-Vector3 Cross(const Vector3 &v1, const Vector3 &v2) {
-  Vector3 result;
+ Vector3 Cross(const  Vector3 &v1, const  Vector3 &v2) {
+   Vector3 result;
 
   result.x = v1.y * v2.z - v1.z * v2.y;
   result.y = v1.z * v2.x - v1.x * v2.z;
@@ -153,7 +153,7 @@ Vector3 Cross(const Vector3 &v1, const Vector3 &v2) {
   return result;
 }
 
-Vector3 Project(const Vector3 &v, const Vector3 &axis) {
+ Vector3 Project(const  Vector3 &v, const  Vector3 &axis) {
   float k = Dot(v, axis) / Dot(axis, axis); // v·axis / |axis|²
   return axis * k;                          // k * axis
 }
@@ -444,7 +444,7 @@ Matrix4x4 MakeRotateMatrix(ShaftType shaft, float radian) {
 // 平行移動行列
 //==================================
 
-Matrix4x4 MakeTranslateMatrix(const Vector3 &translate) {
+Matrix4x4 MakeTranslateMatrix(const  Vector3 &translate) {
 
   Matrix4x4 result;
 
@@ -469,7 +469,7 @@ Matrix4x4 MakeTranslateMatrix(const Vector3 &translate) {
 // 拡大縮小行列
 //==================================
 
-Matrix4x4 MakeScaleMatrix(const Vector3 &scale) {
+Matrix4x4 MakeScaleMatrix(const  Vector3 &scale) {
   Matrix4x4 result;
 
   for (int i = 0; i < 4; ++i) {
@@ -491,8 +491,8 @@ Matrix4x4 MakeScaleMatrix(const Vector3 &scale) {
 //==================================
 // Affine関数
 //==================================
-Matrix4x4 MakeAffineMatrix(const Vector3 &scale, const Vector3 &rotate,
-                           const Vector3 &translate) {
+Matrix4x4 MakeAffineMatrix(const  Vector3 &scale, const  Vector3 &rotate,
+                           const  Vector3 &translate) {
 
   // スケーリング行列 S
   Matrix4x4 resultScaleMatrix = MakeScaleMatrix(scale);
@@ -581,7 +581,7 @@ void keepMinMax(AABB &aabb) {
   aabb.max.z = (std::max)(aabb.min.z, aabb.max.z);
 }
 
-Vector3 Lerp(const Vector3 &start, const Vector3 &end, float t) {
+ Vector3 Lerp(const  Vector3 &start, const  Vector3 &end, float t) {
   // 線形補間
   if (t < 0.0f) {
     t = 0.0f;
@@ -589,25 +589,25 @@ Vector3 Lerp(const Vector3 &start, const Vector3 &end, float t) {
   if (t > 1.0f) {
     t = 1.0f;
   }
-  Vector3 result;
+   Vector3 result;
   result.x = t * start.x + (1.0f - t) * end.x;
   result.y = t * start.y + (1.0f - t) * end.y;
   result.z = t * start.z + (1.0f - t) * end.z;
   return result;
 }
 
-Vector3 Bezier(const Vector3 &p0, const Vector3 &p1, const Vector3 &p2,
+ Vector3 Bezier(const  Vector3 &p0, const  Vector3 &p1, const  Vector3 &p2,
                float t) {
 
-  Vector3 p0p1 = Lerp(p0, p1, t);
-  Vector3 p1p2 = Lerp(p1, p2, t);
-  Vector3 p = Lerp(p0p1, p1p2, t);
+   Vector3 p0p1 = Lerp(p0, p1, t);
+   Vector3 p1p2 = Lerp(p1, p2, t);
+   Vector3 p = Lerp(p0p1, p1p2, t);
 
   return p;
 }
 
-Vector3 operator*(Vector3 &v1, float s) {
-  Vector3 result;
+ Vector3 operator*( Vector3 &v1, float s) {
+   Vector3 result;
   result.x = v1.x * s;
   result.y = v1.y * s;
   result.z = v1.z * s;
@@ -615,9 +615,9 @@ Vector3 operator*(Vector3 &v1, float s) {
   return result;
 }
 
-Vector3 operator*(const Vector3 &v1, const Vector3 &v2) {
+ Vector3 operator*(const  Vector3 &v1, const  Vector3 &v2) {
 
-  Vector3 result;
+   Vector3 result;
 
   result.x = v1.x * v2.x;
   result.y = v1.y * v2.y;
@@ -626,8 +626,8 @@ Vector3 operator*(const Vector3 &v1, const Vector3 &v2) {
   return result;
 }
 
-Vector3 operator+(const Vector3 &v1, const Vector3 &v2) {
-  Vector3 result;
+ Vector3 operator+(const  Vector3 &v1, const  Vector3 &v2) {
+   Vector3 result;
   result.x = v1.x + v2.x;
   result.y = v1.y + v2.y;
   result.z = v1.z + v2.z;
@@ -635,8 +635,8 @@ Vector3 operator+(const Vector3 &v1, const Vector3 &v2) {
   return result;
 }
 
-Vector3 operator-(const Vector3 &v1, const Vector3 &v2) {
-  Vector3 result;
+ Vector3 operator-(const  Vector3 &v1, const  Vector3 &v2) {
+   Vector3 result;
   result.x = v1.x - v2.x;
   result.y = v1.y - v2.y;
   result.z = v1.z - v2.z;
@@ -644,8 +644,8 @@ Vector3 operator-(const Vector3 &v1, const Vector3 &v2) {
   return result;
 }
 
-Vector3 operator/(Vector3 &v1, float s) {
-  Vector3 result;
+ Vector3 operator/( Vector3 &v1, float s) {
+   Vector3 result;
   if (s != 0) {
     result.x = v1.x / s;
     result.y = v1.y / s;
@@ -671,21 +671,21 @@ Matrix4x4 operator*(const Matrix4x4 &m1, const Matrix4x4 &m2) {
   return result;
 }
 
-Vector3 &operator+=(Vector3 &v1, const Vector3 &v2) {
+ Vector3 &operator+=( Vector3 &v1, const  Vector3 &v2) {
   v1.x += v2.x;
   v1.y += v2.y;
   v1.z += v2.z;
   return v1;
 }
 
-Vector3 &operator*=(Vector3 &v, float scalar) {
+ Vector3 &operator*=( Vector3 &v, float scalar) {
   v.x *= scalar;
   v.y *= scalar;
   v.z *= scalar;
   return v;
 }
 
-Vector3 &operator-=(Vector3 &v1, const Vector3 &v2) {
+ Vector3 &operator-=( Vector3 &v1, const  Vector3 &v2) {
   v1.x -= v2.x;
   v1.y -= v2.y;
   v1.z -= v2.z;
@@ -705,16 +705,16 @@ void CircularMotion(Ball &ball, Circular &circular) {
 }
 
 void UpdateSpring(Ball &ball, Spring &spring) {
-  Vector3 diff = ball.position - spring.anchor;
+   Vector3 diff = ball.position - spring.anchor;
 
   float length = Length(diff);
   if (length != 0.0f) {
-    Vector3 direction = Normalize(diff);
-    Vector3 restPosition = spring.anchor + direction * spring.naturalLength;
-    Vector3 displacement = (ball.position - restPosition) * length;
-    Vector3 restoringForce = -spring.stiffness * displacement;
-    Vector3 dampingForce = -spring.dampingCoefficient * ball.velocity;
-    Vector3 force = restoringForce + dampingForce;
+     Vector3 direction = Normalize(diff);
+     Vector3 restPosition = spring.anchor + direction * spring.naturalLength;
+     Vector3 displacement = (ball.position - restPosition) * length;
+     Vector3 restoringForce = -spring.stiffness * displacement;
+     Vector3 dampingForce = -spring.dampingCoefficient * ball.velocity;
+     Vector3 force = restoringForce + dampingForce;
     ball.acceleration = force / ball.mass;
   }
 
@@ -769,8 +769,8 @@ void UpdateConicalPendulum(Ball &ball, ConicalPendulum &conicalPendulum) {
       conicalPendulum.anchor.z - std::sin(conicalPendulum.angle) * radius;
 }
 
-Vector3 Reflect(const Vector3 &input, const Vector3 &normal) {
-    Vector3 result;
+ Vector3 Reflect(const  Vector3 &input, const  Vector3 &normal) {
+     Vector3 result;
 
     // 入力ベクトルを法線ベクトルに対して反射
     float dotProduct = Dot(input, normal);
@@ -780,4 +780,29 @@ Vector3 Reflect(const Vector3 &input, const Vector3 &normal) {
 
     // 反射ベクトルを返す
     return result;
+}
+
+Matrix4x4 MakeRotateAxisAngle(const  Vector3& axis, float angle) {
+
+    Matrix4x4 result;
+    float cosA = std::cos(angle);
+    float sinA = -std::sin(angle);
+    float oneMinusCosA = 1.0f - cosA;
+    result.m[0][0] = cosA + axis.x * axis.x * oneMinusCosA;
+    result.m[0][1] = axis.x * axis.y * oneMinusCosA - axis.z * sinA;
+    result.m[0][2] = axis.x * axis.z * oneMinusCosA + axis.y * sinA;
+    result.m[0][3] = 0.0f;
+    result.m[1][0] = axis.y * axis.x * oneMinusCosA + axis.z * sinA;
+    result.m[1][1] = cosA + axis.y * axis.y * oneMinusCosA;
+    result.m[1][2] = axis.y * axis.z * oneMinusCosA - axis.x * sinA;
+    result.m[1][3] = 0.0f;
+    result.m[2][0] = axis.z * axis.x * oneMinusCosA - axis.y * sinA;
+    result.m[2][1] = axis.z * axis.y * oneMinusCosA + axis.x * sinA;
+    result.m[2][2] = cosA + axis.z * axis.z * oneMinusCosA;
+    result.m[2][3] = 0.0f;
+    result.m[3][0] = 0.0f;
+    result.m[3][1] = 0.0f;
+    result.m[3][2] = 0.0f;
+    result.m[3][3] = 1.0f;
+	return result;
 }
