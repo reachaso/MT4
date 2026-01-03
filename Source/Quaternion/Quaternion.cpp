@@ -1,5 +1,6 @@
 #include "Quaternion.h"
 #include <cmath>
+#include <algorithm>
 
 // デフォルトは単位Quaternion（回転なし）
 Quaternion::Quaternion() : x(0.0f), y(0.0f), z(0.0f), w(1.0f) {}
@@ -136,4 +137,51 @@ Matrix4x4 Quaternion::MakeRotateMatrix(const Quaternion& quaternion) {
 	m.m[3][3] = 1.0f;
 
 	return m;
+}
+
+Quaternion Quaternion::Slerp(const Quaternion& q0In, const Quaternion& q1In, float t) {
+	// q0,q1 は単位Quaternion
+	Quaternion q0 = q0In;
+	Quaternion q1 = q1In;
+
+	// ------------------------------
+	// 内積（cosθ）
+	// ------------------------------
+	float dot = q0.x * q1.x + q0.y * q1.y + q0.z * q1.z + q0.w * q1.w;
+
+	// ------------------------------
+	// dot < 0 なら q0 を反転（資料通り）
+	// （-q は同じ回転を表すので、短い経路になるように調整）
+	// ------------------------------
+	if (dot < 0.0f) {
+		q0 = Quaternion(-q0.x, -q0.y, -q0.z, -q0.w);
+		dot = -dot;
+	}
+
+	// acos の安全策（誤差で1をちょい超えるとNaNになる）
+	if (dot > 1.0f)
+		dot = 1.0f;
+	if (dot < -1.0f)
+		dot = -1.0f;
+
+	// ------------------------------
+	// θ と補間係数
+	// ------------------------------
+	const float theta = std::acos(dot);
+	const float sinTheta = std::sin(theta);
+
+	// sinθ が 0 に近い（ほぼ同じ向き）ときは、0除算を避けてLerp
+	constexpr float kEps = 1.0e-6f;
+	if (std::fabs(sinTheta) < kEps) {
+		const float invT = 1.0f - t;
+		return Quaternion(invT * q0.x + t * q1.x, invT * q0.y + t * q1.y, invT * q0.z + t * q1.z, invT * q0.w + t * q1.w);
+	}
+
+	const float scale0 = std::sin((1.0f - t) * theta) / sinTheta;
+	const float scale1 = std::sin(t * theta) / sinTheta;
+
+	// ------------------------------
+	// 補間結果（Normalizeしない）
+	// ------------------------------
+	return Quaternion(scale0 * q0.x + scale1 * q1.x, scale0 * q0.y + scale1 * q1.y, scale0 * q0.z + scale1 * q1.z, scale0 * q0.w + scale1 * q1.w);
 }

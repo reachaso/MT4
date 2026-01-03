@@ -29,11 +29,14 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	// 初期化処理ここから
 	// ==============================
 
-	Quaternion rotation = Quaternion::MakeRotateAxisAngleQuaternion(Normalize(Vector3{1.0f, 0.4f, -0.2f}), 0.45f);
-	Vector3 pointY = {2.1f, -0.9f, 1.3f};
-	Matrix4x4 rotateMatrix = Quaternion::MakeRotateMatrix(rotation);
-	Vector3 rotatetByQuaternion = Quaternion::RottateVector(pointY, rotation);
-	Vector3 rotatetByMatrix = Vector3Transform(pointY, rotateMatrix);
+	Quaternion rotation0 = Quaternion::MakeRotateAxisAngleQuaternion({0.71f, 0.71f, 0.0f}, 0.3f);
+	Quaternion rotation1 = Quaternion::MakeRotateAxisAngleQuaternion({0.71f, 0.0f, 0.71f}, 3.141592f);
+
+	Quaternion interpolate0 = Quaternion::Slerp(rotation0, rotation1, 0.0f);
+	Quaternion interpolate1 = Quaternion::Slerp(rotation0, rotation1, 0.3f);
+	Quaternion interpolate2 = Quaternion::Slerp(rotation0, rotation1, 0.5f);
+	Quaternion interpolate3 = Quaternion::Slerp(rotation0, rotation1, 0.7f);
+	Quaternion interpolate4 = Quaternion::Slerp(rotation0, rotation1, 1.0f);
 
 	//==============================
 	// ゲームループ
@@ -55,61 +58,44 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		
 		ImGui::Begin("Quaternion Test");
 
-		auto RowQuat = [](const char* label, const Quaternion& q) {
+		auto RowQuatSlerp = [](const char* name, const Quaternion& q, float t) {
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
-			ImGui::Text("%6.2f %6.2f %6.2f %6.2f", q.x, q.y, q.z, q.w);
+			ImGui::Text("%5.2f  %5.2f  %5.2f  %5.2f", q.x, q.y, q.z, q.w);
 			ImGui::TableSetColumnIndex(1);
-			ImGui::Text(": %s", label);
+			ImGui::Text(": %s, Slerp(q0, q1, %.1ff)", name, t);
 		};
 
-		auto RowVec3 = [](const char* label, const Vector3& v) {
-			ImGui::TableNextRow();
-			ImGui::TableSetColumnIndex(0);
-			ImGui::Text("%6.2f %6.2f %6.2f", v.x, v.y, v.z);
-			ImGui::TableSetColumnIndex(1);
-			ImGui::Text(": %s", label);
-		};
+		ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_RowBg;
 
-		auto RowHeader = [](const char* title) {
-			ImGui::TableNextRow();
-			ImGui::TableSetColumnIndex(0);
-			ImGui::TextUnformatted(title);
-			ImGui::TableSetColumnIndex(1);
-			ImGui::TextUnformatted("");
-		};
-
-		auto RowMat4Line = [](const float a, const float b, const float c, const float d) {
-			ImGui::TableNextRow();
-			ImGui::TableSetColumnIndex(0);
-			ImGui::Text("%7.3f %7.3f %7.3f %7.3f", a, b, c, d);
-			ImGui::TableSetColumnIndex(1);
-			ImGui::TextUnformatted("");
-		};
-
-		ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_BordersInnerV;
-
-		if (ImGui::BeginTable("ResultTable", 2, flags)) {
-			// 左列の幅を固定すると、右の「: label」が綺麗に揃う
-			ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed, 320.0f);
+		if (ImGui::BeginTable("SlerpTable", 2, flags)) {
+			// 左列幅固定：コロン位置が綺麗に揃う
+			ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed, 280.0f);
 			ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthStretch);
 
-			// ---- ここから表示したいものを順番に並べる ----
-			RowQuat("rotation", rotation); // Quaternion
+			// 例：t を変えたSlerp結果を表示
+			struct Item {
+				const char* name;
+				float t;
+			};
+			const Item items[] = {
+			    {"interpolate1", 0.0f},
+                {"interpolate1", 0.3f},
+                {"interpolate2", 0.5f},
+                {"interpolate3", 0.7f},
+                {"interpolate4", 1.0f},
+			};
 
-			RowHeader("rotateMatrix");
-			RowMat4Line(rotateMatrix.m[0][0], rotateMatrix.m[0][1], rotateMatrix.m[0][2], rotateMatrix.m[0][3]);
-			RowMat4Line(rotateMatrix.m[1][0], rotateMatrix.m[1][1], rotateMatrix.m[1][2], rotateMatrix.m[1][3]);
-			RowMat4Line(rotateMatrix.m[2][0], rotateMatrix.m[2][1], rotateMatrix.m[2][2], rotateMatrix.m[2][3]);
-			RowMat4Line(rotateMatrix.m[3][0], rotateMatrix.m[3][1], rotateMatrix.m[3][2], rotateMatrix.m[3][3]);
-
-			RowVec3("rotateByQuaternion", rotatetByQuaternion);
-			RowVec3("rotateByMatrix", rotatetByMatrix);
+			for (const auto& it : items) {
+				Quaternion qi = Quaternion::Slerp(rotation0, rotation1, it.t); // ←Slerp実装済み前提
+				RowQuatSlerp(it.name, qi, it.t);
+			}
 
 			ImGui::EndTable();
 		}
 
 		ImGui::End();
+
 
 #endif
 

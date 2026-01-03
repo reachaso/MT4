@@ -40,4 +40,6 @@ public:
 
 	// Quaternionから回転行列を求める
 	static Matrix4x4 MakeRotateMatrix(const Quaternion& quaternion);
+
+	static Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t);
 };
