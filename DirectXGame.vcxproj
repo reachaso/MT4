@@ -156,6 +156,7 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Source\Math\Math3D.cpp" />
+    <ClCompile Include="Source\Quaternion\Quaternion.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\TerrainPS.hlsl">
@@ -256,6 +257,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Math\Math3D.h" />
+    <ClInclude Include="Source\Quaternion\Quaternion.h" />
     <ClInclude Include="Source\struct.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

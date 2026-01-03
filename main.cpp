@@ -1,4 +1,5 @@
 #include "Math/Math3D.h"
+#include "Quaternion/Quaternion.h"
 #include "struct.h"
 #include <KamataEngine.h>
 #include <Windows.h>
@@ -28,16 +29,24 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	// 初期化処理ここから
 	// ==============================
 
-	Vector3 from0 = Normalize(Vector3{1.0f, 0.7f, 0.5f});
-	Vector3 to0 = Multiply(from0, -1.0f);
+	Quaternion q1, q2;
 
-	Vector3 from1 = Normalize(Vector3{-0.6f, 0.9f, 0.2f});
-	Vector3 to1 = Normalize(Vector3{0.4f, 0.7f, -0.5f});
+	q1 = Quaternion(2.0f, 3.0f, 4.0f, 1.0f);
+	q2 = Quaternion(1.0f, 3.0f, 5.0f, 2.0f);
 
-	Matrix4x4 rotateMatrix0 = DirectionToDirection(Normalize(Vector3{1.0f, 0.0f, 0.0f}), Normalize(Vector3{-1.0f, 0.0f, 0.0f}));
+	Quaternion identitiy = Quaternion::IdentityQuaternion();
 
-	Matrix4x4 rotateMatrix1 = DirectionToDirection(from0, to0);
-	Matrix4x4 rotateMatrix2 = DirectionToDirection(from1, to1);
+	Quaternion conj = Quaternion::Conjugate(q1);
+
+	Quaternion inv = Quaternion::Inverse(q1);
+
+	Quaternion normal = Quaternion::Normalize(q1);
+
+	Quaternion mult1 = Quaternion::Muyltiply(q1, q2);
+
+	Quaternion mult2 = Quaternion::Muyltiply(q2, q1);
+
+	float norm = Quaternion::Norm(q1);
 
 	//==============================
 	// ゲームループ
@@ -56,30 +65,45 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//==============================
 
 #ifdef _DEBUG
+		// 1行出力ヘルパー（x y z w : Label）
+		auto DrawQuatRow = [](const char* label, const Quaternion& q) {
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text("%6.2f %6.2f %6.2f %6.2f", q.x, q.y, q.z, q.w);
+			ImGui::TableSetColumnIndex(1);
+			ImGui::Text(" %s", label);
+		};
 
-		ImGui::Begin("rotateMatrix");
+		auto DrawFloatRow = [](const char* label, float v) {
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text("%6.2f", v);
+			ImGui::TableSetColumnIndex(1);
+			ImGui::Text(" %s", label);
+		};
 
-		ImGui::Text("rotateMatrix0");
+		ImGui::Begin("Quaternion Test");
 
-		for (int i = 0; i < 4; i++) {
-			ImGui::Text("%.3f %.3f %.3f %.3f", rotateMatrix0.m[i][0], rotateMatrix0.m[i][1], rotateMatrix0.m[i][2], rotateMatrix0.m[i][3]);
-		}
+		ImGuiTableFlags flags = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV;
 
-		ImGui::Text("rotateMatrix1");
+		if (ImGui::BeginTable("QuatTable", 2, flags)) {
+			// 左列(数値)の幅を固定すると、コロン位置がキレイに揃う
+			ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed, 260.0f);
+			ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthStretch);
 
-		for (int i = 0; i < 4; i++) {
-			ImGui::Text("%.3f %.3f %.3f %.3f", rotateMatrix1.m[i][0], rotateMatrix1.m[i][1], rotateMatrix1.m[i][2], rotateMatrix1.m[i][3]);
-		}
+			DrawQuatRow("Identity", identitiy);
+			DrawQuatRow("Conjugate", conj);
+			DrawQuatRow("Inverse", inv);
+			DrawQuatRow("Normalize", normal);
+			DrawQuatRow("Multipy(q1, q2)", mult1);
+			DrawQuatRow("Multipy(q2, q1)", mult2);
+			DrawFloatRow("Norm", norm);
 
-		ImGui::Text("rotateMatrix2");
-
-		for (int i = 0; i < 4; i++) {
-			ImGui::Text("%.3f %.3f %.3f %.3f", rotateMatrix2.m[i][0], rotateMatrix2.m[i][1], rotateMatrix2.m[i][2], rotateMatrix2.m[i][3]);
+			ImGui::EndTable();
 		}
 
 		ImGui::End();
-
-#endif // DEBUG
+#endif
 
 		//==============================
 		// 更新処理終了
