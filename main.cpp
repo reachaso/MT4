@@ -28,10 +28,16 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	// 初期化処理ここから
 	// ==============================
 
-	Vector3 axis = Normalize({1.0f, 1.0f, 1.0f});
-	float angle = 0.44f;
+	Vector3 from0 = Normalize(Vector3{1.0f, 0.7f, 0.5f});
+	Vector3 to0 = Multiply(from0, -1.0f);
 
-	Matrix4x4 rotateMatrix = MakeRotateAxisAngle(axis, angle);
+	Vector3 from1 = Normalize(Vector3{-0.6f, 0.9f, 0.2f});
+	Vector3 to1 = Normalize(Vector3{0.4f, 0.7f, -0.5f});
+
+	Matrix4x4 rotateMatrix0 = DirectionToDirection(Normalize(Vector3{1.0f, 0.0f, 0.0f}), Normalize(Vector3{-1.0f, 0.0f, 0.0f}));
+
+	Matrix4x4 rotateMatrix1 = DirectionToDirection(from0, to0);
+	Matrix4x4 rotateMatrix2 = DirectionToDirection(from1, to1);
 
 	//==============================
 	// ゲームループ
@@ -53,8 +59,22 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		ImGui::Begin("rotateMatrix");
 
+		ImGui::Text("rotateMatrix0");
+
 		for (int i = 0; i < 4; i++) {
-			ImGui::Text("%.3f %.3f %.3f %.3f", rotateMatrix.m[i][0], rotateMatrix.m[i][1], rotateMatrix.m[i][2], rotateMatrix.m[i][3]);
+			ImGui::Text("%.3f %.3f %.3f %.3f", rotateMatrix0.m[i][0], rotateMatrix0.m[i][1], rotateMatrix0.m[i][2], rotateMatrix0.m[i][3]);
+		}
+
+		ImGui::Text("rotateMatrix1");
+
+		for (int i = 0; i < 4; i++) {
+			ImGui::Text("%.3f %.3f %.3f %.3f", rotateMatrix1.m[i][0], rotateMatrix1.m[i][1], rotateMatrix1.m[i][2], rotateMatrix1.m[i][3]);
+		}
+
+		ImGui::Text("rotateMatrix2");
+
+		for (int i = 0; i < 4; i++) {
+			ImGui::Text("%.3f %.3f %.3f %.3f", rotateMatrix2.m[i][0], rotateMatrix2.m[i][1], rotateMatrix2.m[i][2], rotateMatrix2.m[i][3]);
 		}
 
 		ImGui::End();

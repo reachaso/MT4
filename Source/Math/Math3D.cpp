@@ -806,3 +806,39 @@ Matrix4x4 MakeRotateAxisAngle(const  Vector3& axis, float angle) {
     result.m[3][3] = 1.0f;
 	return result;
 }
+
+Matrix4x4 DirectionToDirection(const Vector3& from, const Vector3& to) {
+	const float kEps = 1e-6f;
+
+	// 方向として扱う（長さが0は回せないので単位行列）
+	if (Length(from) < kEps || Length(to) < kEps) {
+		return MakeIdentity4x4();
+	}
+
+	Vector3 f = Normalize(from);
+	Vector3 t = Normalize(to);
+
+	float c = Dot(f, t);
+	c = std::clamp(c, -1.0f, 1.0f);
+
+	// ほぼ同じ方向
+	if (c > 1.0f - 1e-6f) {
+		return MakeIdentity4x4();
+	}
+
+	// ほぼ逆方向（外積が0になるので軸を決め打ちで作る）
+	if (c < -1.0f + 1e-6f) {
+		Vector3 axis = Cross(f, Vector3{0.0f, 0.0f, 1.0f});
+		if (Length(axis) < kEps) {
+			axis = Cross(f, Vector3{0.0f, 1.0f, 0.0f});
+		}
+		axis = Normalize(axis);
+		return MakeRotateAxisAngle(axis, 3.14159265f);
+	}
+
+	// 一般ケース
+	Vector3 axis = Normalize(Cross(f, t));
+	float angle = std::acos(c);
+
+	return MakeRotateAxisAngle(axis, angle);
+}
