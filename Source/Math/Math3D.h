@@ -177,3 +177,5 @@ Vector3 Reflect(const Vector3 &input, const Vector3 &normal);
 // ==================================
 
 Matrix4x4 MakeRotateAxisAngle(const Vector3& axis, float angle);
+
+Matrix4x4 DirectionToDirection(const Vector3& from, const Vector3& to);
