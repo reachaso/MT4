@@ -51,3 +51,89 @@ Quaternion Quaternion::Inverse(const Quaternion& q) {
 	const float inv = 1.0f / lenSq;
 	return Quaternion(c.x * inv, c.y * inv, c.z * inv, c.w * inv);
 }
+
+
+// 任意回転軸を表すQuaternionの生成（axisは内部で正規化）
+Quaternion Quaternion::MakeRotateAxisAngleQuaternion(const Vector3& axis, float angle) {
+	constexpr float kEps = 1.0e-6f;
+
+	const float ax = axis.x;
+	const float ay = axis.y;
+	const float az = axis.z;
+
+	const float len = std::sqrt(ax * ax + ay * ay + az * az);
+	if (len < kEps) {
+		return IdentityQuaternion();
+	}
+
+	const float invLen = 1.0f / len;
+	const float nx = ax * invLen;
+	const float ny = ay * invLen;
+	const float nz = az * invLen;
+
+	const float half = angle * 0.5f;
+	const float s = std::sin(half);
+	const float c = std::cos(half);
+
+	// x,y,z,w
+	return Quaternion(nx * s, ny * s, nz * s, c);
+}
+
+// ベクトルをQuaternionで回転（q * v * q^-1）
+Vector3 Quaternion::RottateVector(const Vector3& vector, const Quaternion& quaternion) {
+	// 安全のため正規化（回転として使うなら本来は単位Quaternion想定）
+	const Quaternion q = Normalize(quaternion);
+
+	// ベクトルを純Quaternion化（w=0）
+	const Quaternion p(vector.x, vector.y, vector.z, 0.0f);
+
+	// r = q * p * q^{-1}
+	const Quaternion qInv = Inverse(q);
+	const Quaternion qp = Muyltiply(q, p);
+	const Quaternion r = Muyltiply(qp, qInv);
+
+	return Vector3(r.x, r.y, r.z);
+}
+
+Matrix4x4 Quaternion::MakeRotateMatrix(const Quaternion& quaternion) {
+	const Quaternion q = Normalize(quaternion);
+
+	const float x = q.x;
+	const float y = q.y;
+	const float z = q.z;
+	const float w = q.w;
+
+	const float xx = x * x;
+	const float yy = y * y;
+	const float zz = z * z;
+	const float xy = x * y;
+	const float xz = x * z;
+	const float yz = y * z;
+	const float wx = w * x;
+	const float wy = w * y;
+	const float wz = w * z;
+
+	Matrix4x4 m{};
+
+	m.m[0][0] = 1.0f - 2.0f * (yy + zz);
+	m.m[0][1] = 2.0f * (xy + wz);
+	m.m[0][2] = 2.0f * (xz - wy);
+	m.m[0][3] = 0.0f;
+
+	m.m[1][0] = 2.0f * (xy - wz);
+	m.m[1][1] = 1.0f - 2.0f * (xx + zz);
+	m.m[1][2] = 2.0f * (yz + wx);
+	m.m[1][3] = 0.0f;
+
+	m.m[2][0] = 2.0f * (xz + wy);
+	m.m[2][1] = 2.0f * (yz - wx);
+	m.m[2][2] = 1.0f - 2.0f * (xx + yy);
+	m.m[2][3] = 0.0f;
+
+	m.m[3][0] = 0.0f;
+	m.m[3][1] = 0.0f;
+	m.m[3][2] = 0.0f;
+	m.m[3][3] = 1.0f;
+
+	return m;
+}

@@ -31,4 +31,13 @@ public:
 
 	// Quaternionの逆数を返す
 	static Quaternion Inverse(const Quaternion& quaternion);
+
+	// 任意回転軸を表すQuaternionの生成
+	static Quaternion MakeRotateAxisAngleQuaternion(const Vector3& axis, float angle);
+
+	// ベクトルをQuaternionで回転させた結果を返す
+	static Vector3 RottateVector(const Vector3& vector, const Quaternion& quaternion);
+
+	// Quaternionから回転行列を求める
+	static Matrix4x4 MakeRotateMatrix(const Quaternion& quaternion);
 };
