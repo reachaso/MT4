@@ -1,6 +1,8 @@
 #pragma once
 #include "struct.h"
 
+using namespace KamataEngine;
+
 //==================================
 // Vector3 関連関数
 //==================================
@@ -169,3 +171,9 @@ void UpdateConicalPendulum(Ball &ball, ConicalPendulum &conicalPendulum);
 //==================================
 
 Vector3 Reflect(const Vector3 &input, const Vector3 &normal);
+
+// ==================================
+// 任意軸回転行列の作成
+// ==================================
+
+Matrix4x4 MakeRotateAxisAngle(const Vector3& axis, float angle);
